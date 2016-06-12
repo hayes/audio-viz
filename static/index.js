@@ -51,7 +51,7 @@ function visualize (stream) {
       canvasCtx.fillStyle = 'hsla(' + -color + ', ' + Math.max(50, 100 * barHeight  / 128) + '%,' + Math.min(60, barHeight / 3) + '%, 1)'
       canvasCtx.fillRect(WIDTH / 2 + x, HEIGHT-barHeight/2,barWidth,barHeight/2)
       canvasCtx.fillRect(WIDTH / 2 - x, HEIGHT-barHeight/2,barWidth,barHeight/2)
-      x += barWidth + 5
+      x += barWidth + 3
     }
   }
 }
