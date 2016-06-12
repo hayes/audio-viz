@@ -1,51 +1,23 @@
-// fork getUserMedia for multiple browser versions, for those
-// that need prefixes
-
 navigator.getUserMedia = (navigator.getUserMedia ||
                           navigator.webkitGetUserMedia ||
                           navigator.mozGetUserMedia ||
                           navigator.msGetUserMedia)
 
-// set up forked web audio context, for multiple browsers
-// window. is needed otherwise Safari explodes
-
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-var voiceSelect = document.getElementById("voice")
-var source
-var stream
-
-// grab the mute button to use below
-
-var mute = document.querySelector('.mute');
-
-//set up the different audio nodes we will use for the app
-
 var analyser = audioCtx.createAnalyser();
 analyser.minDecibels = -90
 analyser.maxDecibels = -20
-analyser.smoothingTimeConstant = .9
-
-// grab audio track via XHR for convolver node
-
-var soundSource, concertHallBuffer;
+analyser.smoothingTimeConstant = .89
 
 var canvas = document.querySelector('.visualizer');
 var canvasCtx = canvas.getContext("2d");
+var intendedWidth = document.querySelector('.wrapper').clientWidth
+canvas.setAttribute('width', intendedWidth)
 
-var intendedWidth = document.querySelector('.wrapper').clientWidth;
+navigator.getUserMedia({audio: true}, visualize, console.error.bind(console))
 
-canvas.setAttribute('width',intendedWidth);
-
-var drawVisual
-
-navigator.getUserMedia({audio: true}, gotMic, console.error.bind(console))
-
-function gotMic(stream) {
-   audioCtx.createMediaStreamSource(stream).connect(analyser)
-   visualize()
-}
-
-function visualize() {
+function visualize (stream) {
+  audioCtx.createMediaStreamSource(stream).connect(analyser)
   WIDTH = canvas.width
   HEIGHT = canvas.height
 
@@ -71,18 +43,15 @@ function visualize() {
     var x = 0;
     var diff = -(Date.now() - start) / 30
 
-    for(var i = 5; i < bufferLength; i++) {
+    for(var i = 1; i < bufferLength; i++) {
       barHeight = dataArray[i]
 
       var color = (((i / bufferLength)  * 270) + diff) % 360
 
-      canvasCtx.fillStyle = 'hsla(' + color + ', ' + Math.max(50, 100 * (HEIGHT - barHeight)  / 128) + '%,' + Math.min(60, 100 * barHeight  / 128) + '%, 1)'
-      // canvasCtx.fillRect(x,0,barWidth,HEIGHT-barHeight/2)
-      canvasCtx.fillStyle = 'hsla(' + -color + ', ' + Math.max(50, 100 * barHeight  / 128) + '%,' + Math.min(60, 100 * barHeight  / 128) + '%, 1)'
-      // canvasCtx.fillRect(x, HEIGHT-barHeight/2,barWidth,barHeight/2)
+      canvasCtx.fillStyle = 'hsla(' + -color + ', ' + Math.max(50, 100 * barHeight  / 128) + '%,' + Math.min(60, barHeight / 3) + '%, 1)'
       canvasCtx.fillRect(WIDTH / 2 + x, HEIGHT-barHeight/2,barWidth,barHeight/2)
       canvasCtx.fillRect(WIDTH / 2 - x, HEIGHT-barHeight/2,barWidth,barHeight/2)
-      x += barWidth + 1
+      x += barWidth + 5
     }
   }
 }
