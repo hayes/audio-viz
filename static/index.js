@@ -9,10 +9,11 @@ analyser.minDecibels = -90
 analyser.maxDecibels = -20
 analyser.smoothingTimeConstant = .89
 
+var wrapper = document.querySelector('.wrapper')
 var canvas = document.querySelector('.visualizer');
 var canvasCtx = canvas.getContext("2d");
-var intendedWidth = document.querySelector('.wrapper').clientWidth
-canvas.setAttribute('width', intendedWidth)
+canvas.setAttribute('width', wrapper.clientWidth)
+canvas.setAttribute('height', wrapper.clientHight)
 
 navigator.getUserMedia({audio: true}, visualize, console.error.bind(console))
 
